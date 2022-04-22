@@ -25,7 +25,14 @@ SECRET_KEY = 'jlb$svr7q3sueumv1*x9d)s6aqj=1)c_8pk6=_m8)ypl1o2f3x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+#ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:3000']
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+]
+
 
 
 # Application definition
@@ -37,10 +44,29 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third party apps
+    'rest_framework',
+    'corsheaders',
+    
+    # My apps
+    'accounts.apps.AccountsConfig',
 ]
+
+# DRF Authentication Scheme 
+# set permission according to your requirements
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissions',
+        'rest_framework.permissions.IsAdminUser'
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,7 +80,8 @@ ROOT_URLCONF = 'djreact.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['STATICFILES_DIRS',],
+        #'DIRS': os.path.join(BASE_DIR, 'staticfiles'),
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,4 +144,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
+
+STATIC_URL = '/dist/'
+
+# Extra places for collectstatic to find static files.
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'frontend/build')
+]
